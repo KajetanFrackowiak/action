@@ -1,7 +1,7 @@
 name: Python application
 
 on:
-  workflow_dispatch: # Allows mannually running the workflow
+  workflow_dispatch:  # Allows manually running the workflow
   push:
     branches:
       - main  # Trigger on push to the main branch
@@ -10,6 +10,8 @@ on:
       - main  # Trigger on pull requests to the main branch
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
