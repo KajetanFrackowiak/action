@@ -10,8 +10,9 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # Use the latest Ubuntu environment
-
+    # runs-on: ubuntu-latest  # Use the latest Ubuntu environment
+      runs-on: self-hosted
+      
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2  # Checkout the repository to the runner
