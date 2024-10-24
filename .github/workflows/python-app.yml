@@ -24,20 +24,9 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip  # Upgrade pip
-        pip install -r requirements.txt      # Install dependencies from requirements.txt
+        # pip install -r requirements.txt      # Install dependencies from requirements.txt
 
     - name: Run the script
       run: |
         python src/main.py  # Run your Python script
 
-    - name: Upload training output
-      uses: actions/upload-artifact@v3
-      with:
-        name: training-output
-        path: training_output/  # Archive the training output directory
-
-    - name: Upload HTML report
-      uses: actions/upload-artifact@v3
-      with:
-        name: html-report
-        path: html_output/  # Archive the HTML report directory
