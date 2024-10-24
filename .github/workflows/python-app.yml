@@ -1,4 +1,4 @@
-name: Python application
+name: Python application run by @${{ github.actor }}
 
 on: 
   push:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted  # Specify self-hosted runner
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
