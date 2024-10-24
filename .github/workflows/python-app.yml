@@ -3,19 +3,18 @@ name: Python application
 on: 
   push:
     branches:
-      - main  # Trigger on push to main branch
+      - main  # Trigger on push to the main branch
   pull_request:
     branches:
       - main  # Trigger on pull requests to the main branch
 
 jobs:
   build:
-    # runs-on: ubuntu-latest  # Use the latest Ubuntu environment
-      runs-on: self-hosted
-      
+    runs-on: self-hosted  # Specify self-hosted runner
+
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2  # Checkout the repository to the runner
+      uses: actions/checkout@v2  # Checkout the repository
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -25,9 +24,7 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip  # Upgrade pip
-        # pip install -r requirements.txt      # Install dependencies from requirements.txt
 
     - name: Run the script
       run: |
-        python src/main.py  # Run your Python script
-
+        python src/main.py  # Run the Python script
