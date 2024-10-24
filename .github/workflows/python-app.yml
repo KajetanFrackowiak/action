@@ -31,3 +31,12 @@ jobs:
     - name: Run the script
       run: |
         python src/main.py  # Run the Python script
+
+  handle_failure:
+    runs-on: ubuntu-latest
+    if: ${{ vars.EXEC_WC != 'true' }}  # This job runs when EXEC_WC is not 'true'
+    steps:
+    - name: Print failure message
+      run: |
+        echo "Something went wrong"
+        exit 1  # Force the job to fail with a non-zero exit code
