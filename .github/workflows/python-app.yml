@@ -7,15 +7,19 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     
+    env:
+      CACHE_NAME: outputs_demo
+      OPERATION_TYPE: build # Indicator of the operation type
+
     steps:
       - name: Cache outputs_demo
         uses: actions/cache@v3
         with:
           path: outputs_demo
-          key: ${{ runner.os }}-outputs-demo-${{ github.sha }}
+          key: ${{ runner.os }}-${{ env.CACHE_NAME}}-${{ hashFiles('src/**/*.py') }} # Unique cache key
           restore-keys: |
-            ${{ runner.os }}-outputs-demo-
-              
+            ${{ runner.os }}-${{ env.CACHE_NAME }}- # Resotre uning partial keys if exact match is not found
+
       - id: step1
         run: |
           echo "output1=hello" >> $GITHUB_ENV
