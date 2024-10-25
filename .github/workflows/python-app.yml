@@ -8,6 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - name: Cache outputs_demo
+        uses: actions/cache@v3
+        with:
+          path: outputs_demo
+          key: ${{ runner.os }}-outputs-demo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-outputs-demo-
+              
       - id: step1
         run: |
           echo "output1=hello" >> $GITHUB_ENV
