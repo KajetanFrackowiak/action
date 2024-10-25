@@ -1,41 +1,22 @@
-name: Python application
+name: outputs_demo
 
 on:
-  # Allows you to run this workflow from another workflow
-  workflow_call:
-    inputs:
-      title:
-        required: true
-        type: string
-      body:
-        required: true
-        type: string
-  # Allows you to call this manually from the Actions tab
   workflow_dispatch:
-    inputs:
-      title:
-        description: 'Issue title'
-        required: true
-        type: string
-      body:
-        description: 'Issue body'
-        required: true
-        type: string
 
 jobs:
-  create_issue_on_failure:
+  job1:
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
+    
+    outputs:
+      output1: ${{ steps.step1.outputs.test }}
+      output2: ${{ steps.step2.outputs.test }}
+    
     steps:
-      - name: Create issue using REST API
+      - id: step1
         run: |
-          curl --request POST \
-          --url https://api.github.com/repos/${{ github.repository }}/issues \
-          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
-          --header 'content-type: application/json' \
-          --data '{
-            "title": "Failure: ${{ inputs.title }}",
-            "body": "Details: ${{ inputs.body }}"
-          }' \
-          --fail
+          echo "test=hello" >> $GITHUB_ENV
+          echo "test=hello" >> $GITHUB_ENV
+
+      - id: step2
+        run: |
+          echo "test=world" >> $GITHUB_ENV
