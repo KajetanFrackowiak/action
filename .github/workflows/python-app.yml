@@ -40,32 +40,21 @@ jobs:
         id: changelog
         uses: TriPSs/conventional-changelog-action@v3.14.0
 
-      - name: Set job outputs
-        id: set_outputs
-        run: |
-          echo "changelog=${{ steps.changelog.outputs.changelog }}" >> $GITHUB_ENV
-          echo "clean_changelog=${{ steps.changelog.outputs.clean_changelog }}" >> $GITHUB_ENV
-          echo "version=${{ steps.changelog.outputs.version }}" >> $GITHUB_ENV
-          echo "output1=$(echo hello)" >> $GITHUB_ENV
-          echo "output2=$(echo world)" >> $GITHUB_ENV
-          echo "output3=$(echo $tagvar)" >> $GITHUB_ENV
-          echo "output4=$(cat hello.txt)" >> $GITHUB_ENV
-
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: my-artifact
-          path: hello.txt  # Use the correct output file
-
+          name: my-artifact  # This is the name you’re uploading
+          path: hello.txt  # Specify the correct file to upload
+            
     outputs:
-      output1: ${{ steps.step1.outputs.output1 }}
-      output2: ${{ steps.step2.outputs.output2 }}
-      output3: ${{ steps.step3.outputs.output3 }}
-      output4: ${{ steps.python_script.outputs.output4 }}
+      output1: ${{ env.output1 }}
+      output2: ${{ env.output2 }}
+      output3: ${{ env.output3 }}
+      output4: ${{ env.output4 }}
       changelog: ${{ steps.changelog.outputs.changelog }}
       clean_changelog: ${{ steps.changelog.outputs.clean_changelog }}
       version: ${{ steps.changelog.outputs.version }}
-
+    
   job2:
     runs-on: ubuntu-latest
     needs: job1
@@ -86,21 +75,8 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
-          name: my-artifact  # Name must match the uploaded artifact
+          name: my-artifact  # Matches the name used during upload
 
       - name: Use the Artifact
         run: |
           cat hello.txt  # Displaying the content of the downloaded artifact
-
-  test-run:
-    runs-on: ubuntu-latest
-    needs: job3
-    steps:
-      - name: Download candidate artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: my-artifact
-      - run: |
-          echo "Hello, World" >> hello.txt
-          cat hello.txt
-          
