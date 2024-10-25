@@ -8,19 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-      - id: step1
-        run: |
-          echo "output1=hello" >> $GITHUB_ENV
-          
-      - id: step2
-        run: |
-          echo "output2=world" >> $GITHUB_ENV
-      
-      - id: step3
-        run: |
-          tagvar=test12345
-          echo "output3=$tagvar" >> $GITHUB_ENV
-      
       - name: Checkout branch
         uses: actions/checkout@v3
       
@@ -29,44 +16,20 @@ jobs:
         with:
           python-version: '3.12'
       
-      - name: Run python script
+      - name: Run Python script and create hello.txt
         id: python_script
         run: |
-          python src/main.py
-          contents=$(cat hello.txt)
-          echo "output4=$contents" >> $GITHUB_ENV
-      
-      - name: Conventional Changelog Action
-        id: changelog
-        uses: TriPSs/conventional-changelog-action@v3.14.0
+          echo "Hello, World" > hello.txt  # Ensuring hello.txt is created
+          python src/main.py  # Assuming this is where hello.txt is generated
 
-      - name: Upload a Build Artifact
+      - name: Debug check for hello.txt
+        run: ls -la   # List directory contents to confirm the file exists
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: my-artifact  # Upload artifact as "my-artifact"
-          path: hello.txt
-
-    outputs:
-      output1: ${{ steps.step1.outputs.output1 }}
-      output2: ${{ steps.step2.outputs.output2 }}
-      output3: ${{ steps.step3.outputs.output3 }}
-      output4: ${{ steps.python_script.outputs.output4 }}
-      changelog: ${{ steps.changelog.outputs.changelog }}
-      clean_changelog: ${{ steps.changelog.outputs.clean_changelog }}
-      version: ${{ steps.changelog.outputs.version }}
-
-  job2:
-    runs-on: ubuntu-latest
-    needs: job1
-    steps:
-      - run: |
-          echo "Output1: ${{ needs.job1.outputs.output1 }}"
-          echo "Output2: ${{ needs.job1.outputs.output2 }}"
-          echo "Tagname: ${{ needs.job1.outputs.output3 }}"
-          echo "Contents: ${{ needs.job1.outputs.output4 }}"
-          echo "Changelog: ${{ needs.job1.outputs.changelog }}"
-          echo "Clean Changelog: ${{ needs.job1.outputs.clean_changelog }}"
-          echo "Version: ${{ needs.job1.outputs.version }}"
+          name: my-artifact
+          path: hello.txt  # Uploading hello.txt directly
 
   job3:
     runs-on: ubuntu-latest
@@ -75,11 +38,11 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
-          name: my-artifact  # Use the artifact name "my-artifact" to download
+          name: my-artifact  # Ensures artifact name matches job1's upload
 
-      - name: Use the Artifact
+      - name: Verify Artifact Content
         run: |
-          cat hello.txt  # Displaying the content of the downloaded artifact
+          cat hello.txt  # Display content of downloaded hello.txt
 
   test-run:
     runs-on: ubuntu-latest
@@ -88,8 +51,7 @@ jobs:
       - name: Download candidate artifacts
         uses: actions/download-artifact@v3
         with:
-          name: my-artifact  # Correct name of artifact to download
-
+          name: my-artifact
+          
       - run: |
-          echo "Hello, World" >> hello.txt
-          cat hello.txt
+          cat hello.txt  # Check content to confirm artifact was downloaded
