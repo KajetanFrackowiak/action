@@ -40,22 +40,11 @@ jobs:
         id: changelog
         uses: TriPSs/conventional-changelog-action@v3.14.0
 
-      - name: Set job outputs
-        id: set_outputs
-        run: |
-          echo "changelog=${{ steps.changelog.outputs.changelog }}" >> $GITHUB_ENV
-          echo "clean_changelog=${{ steps.changelog.outputs.clean_changelog }}" >> $GITHUB_ENV
-          echo "version=${{ steps.changelog.outputs.version }}" >> $GITHUB_ENV
-          echo "output1=$(echo hello)" >> $GITHUB_ENV
-          echo "output2=$(echo world)" >> $GITHUB_ENV
-          echo "output3=$(echo $tagvar)" >> $GITHUB_ENV
-          echo "output4=$(cat hello.txt)" >> $GITHUB_ENV
-
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: my-artifact
-          path: hello.txt  # Use the correct output file
+          name: my-artifact  # Upload artifact as "my-artifact"
+          path: hello.txt
 
     outputs:
       output1: ${{ steps.step1.outputs.output1 }}
@@ -86,7 +75,7 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
-          name: my-artifact  # Name must match the uploaded artifact
+          name: my-artifact  # Use the artifact name "my-artifact" to download
 
       - name: Use the Artifact
         run: |
@@ -99,8 +88,8 @@ jobs:
       - name: Download candidate artifacts
         uses: actions/download-artifact@v3
         with:
-          name: my-artifact
+          name: my-artifact  # Correct name of artifact to download
+
       - run: |
           echo "Hello, World" >> hello.txt
           cat hello.txt
-          
