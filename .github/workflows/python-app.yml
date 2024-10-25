@@ -2,8 +2,16 @@ name: outputs_demo
 
 on:
   workflow_dispatch:
+  issues:
+    types:
+      - opened
 
 jobs:
+  notify-for-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Something happened with an issue"
+      
   job1:
     runs-on: ubuntu-latest
     
