@@ -32,7 +32,7 @@ jobs:
       - name: Run python script
         id: python_script
         run: |
-          python create_txt_file.py
+          python main.py
           contents=$(cat readme.txt)
           echo "output4=$contents" >> $GITHUB_ENV
 
