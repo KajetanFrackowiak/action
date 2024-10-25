@@ -12,13 +12,18 @@ jobs:
       OPERATION_TYPE: build # Indicator of the operation type
 
     steps:
+      - name: Set Current Date
+        id: date
+        run: echo "CACHE_DATE=$(date + '%Y-%m-%d')" >> $GITHUB_ENV
+        
       - name: Cache outputs_demo
+        if: env.OPERATION_TYPE == 'build'
         uses: actions/cache@v3
         with:
           path: outputs_demo
-          key: ${{ runner.os }}-${{ env.CACHE_NAME}}-${{ hashFiles('src/**/*.py') }} # Unique cache key
+          key: ${{ runner.os }}-${{ env.CACHE_NAME}}-${{ steps.date.outputs.CACHE_DATE }}-${{ hashFiles('src/**/*.py') }} # Unique cache key
           restore-keys: |
-            ${{ runner.os }}-${{ env.CACHE_NAME }}- # Resotre uning partial keys if exact match is not found
+            ${{ runner.os }}-${{ env.CACHE_NAME }}-${{ steps.date.outputs.CACHE_DATE }}- # Resotre uning partial keys if exact match is not found
 
       - id: step1
         run: |
