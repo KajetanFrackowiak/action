@@ -37,10 +37,10 @@ jobs:
           echo "output4=$contents" >> $GITHUB_ENV
 
     outputs:
-      output1: ${{ steps.step1.outputs.output1 }}
-      output2: ${{ steps.step2.outputs.output2 }}
-      output3: ${{ steps.step3.outputs.output3 }}
-      output4: ${{ steps.python_script.outputs.output4 }}
+      output1: ${{ env.output1 }}
+      output2: ${{ env.output2 }}
+      output3: ${{ env.output3 }}
+      output4: ${{ env.output4 }}
 
   job2:
     runs-on: ubuntu-latest
