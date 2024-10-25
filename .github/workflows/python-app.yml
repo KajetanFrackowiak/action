@@ -33,6 +33,7 @@ jobs:
     - name: Run the script
       env:
         MY_SECRET_KEY: ${{ secrets.MY_SECRET_KEY }}
+        MY_SECRET_KEY_2: ${{ secrets.MY_SECRET_KEY_2 }}
       run: |
         echo "Running with the secret..."
         python src/main.py  # Run the Python script
