@@ -38,4 +38,5 @@ jobs:
         python src/main.py  # Run the Python script
 
     - name: Display global environment variable
-      run: echo "Global variable: $GLOBAL_VAR"
+      run: |
+        echo "Global variable: $GLOBAL_VAR"
