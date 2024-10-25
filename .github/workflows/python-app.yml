@@ -1,43 +1,41 @@
 name: Python application
 
 on:
-  workflow_dispatch:  # Allows manually running the workflow
-  push:
-    branches:
-      - main  # Trigger on push to the main branch
-  pull_request:
-    branches:
-      - main  # Trigger on pull requests to the main branch
-
-env:
-  GLOBAL_VAR: "global_value"
+  # Allows you to run this workflow from another workflow
+  workflow_call:
+    inputs:
+      title:
+        required: true
+        type: string
+      body:
+        required: true
+        type: string
+  # Allows you to call this manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      title:
+        description: 'Issue title'
+        required: true
+        type: string
+      body:
+        description: 'Issue body'
+        required: true
+        type: string
 
 jobs:
-  build:
+  create_issue_on_failure:
     runs-on: ubuntu-latest
-
+    permissions:
+      issues: write
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3  # Checkout the repository
-
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.12.2'  # Specify the Python version
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip  # Upgrade pip
-        pip install -r requirements.txt  # Install dependencies from a requirements file
-
-    - name: Run the script
-      env:
-        MY_SECRET_KEY: ${{ secrets.MY_SECRET_KEY }}
-        MY_SECRET_KEY_2: ${{ secrets.MY_SECRET_KEY_2 }}
-      run: |
-        echo "Running with the secret..."
-        python src/main.py  # Run the Python script
-
-    - name: Display global environment variable
-      run: |
-        echo "Global variable: $GLOBAL_VAR"
+      - name: Create issue using REST API
+        run: |
+          curl --request POST \
+          --url https://api.github.com/repos/${{ github.repository }}/issues \
+          --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          --header 'content-type: application/json' \
+          --data '{
+            "title": "Failure: ${{ inputs.title }}",
+            "body": "Details: ${{ inputs.body }}"
+          }' \
+          --fail
