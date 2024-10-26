@@ -1,35 +1,26 @@
-name: Python Workflow with Failure Issue Creation
+name: Hello world workflow
 
 on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
-  workflow_call: {}
 
 jobs:
-  test-run:
+  hello:
     runs-on: ubuntu-latest
     steps:
-      - name: Run some test
-        run: |
-          # Simulate a test command that may fail
-          exit 1  # This forces a failure for demonstration purposes
-
-  create_issue_on_failure:
+    - uses: actions/checkout@v3
+    - name: hello world
+      run: echo "Hello, World!"
+      shell: bash
+  
+  goodbye:
     runs-on: ubuntu-latest
-    if: failure()  # Runs only if previous jobs failed
-    permissions:
-      issues: write
     steps:
-      - name: Create issue using REST API
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          curl --request POST \
-            --url https://api.github.com/repos/${{ github.repository }}/issues \
-            --header "authorization: Bearer $GITHUB_TOKEN" \
-            --header "content-type: application/json" \
-            --data '{
-              "title": "Failure: Workflow Run for Commit ${{ github.sha }}",
-              "body": "This issue was automatically created due to a failure in workflow **${{ github.workflow }}**.\n\nCommit: ${{ github.sha }}\nRun: ${{ github.run_id }}\n\nPlease check the workflow run for more details."
-            }' \
-            --fail
-
+      - name: goodbye world
+        run: echp "Goodbye, World!"
+        shell: bash
