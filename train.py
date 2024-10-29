@@ -30,7 +30,8 @@ def create_train_state(rng, learning_rate, model):
 
 def compute_loss(logits, labels):
     """Computes the loss."""
-    return optax.softmax_cross_entropy(logits=logits, labels=labels).mean()
+    labels_one_hot = jax.nn.one_hot(labels, num_classes=logits.shape[-1])
+    return optax.softmax_cross_entropy(logits=logits, labels=labels_one_hot).mean()
 
 
 @jax.jit
@@ -40,18 +41,19 @@ def train_step(state, batch, rng):
     def loss_fn(params, rng):
         rng, dropout_rng = jax.random.split(rng)
         logits = state.apply_fn(
-            {"params": params},
+            {"params": params["params"]},
             batch["input_ids"],
             train=True,
             rngs={"dropout": dropout_rng},
         )
         loss = compute_loss(logits, batch["labels"])
-        return loss
+        return loss, logits
 
-    grad_fn = jax.value_and_grad(lambda params: loss_fn(params, rng))
-    loss, grads = grad_fn(state.params)
+    grad_fn = jax.value_and_grad(lambda params: loss_fn(params, rng), has_aux=True)
+    (loss, logits), grads = grad_fn(state.params)
+
     state = state.apply_gradients(grads=grads)
-    return state, loss
+    return state, loss, logits
 
 
 def compute_accuracy(logits, labels):
@@ -86,8 +88,8 @@ def train_model(dataset, batch_size=32, num_epochs=3, rng=rng):
             }
 
             # Call the training step
-            state, loss = train_step(state, jax_batch, rng)
-            accuracy = compute_accuracy(state, jax_batch)
+            state, loss, logits = train_step(state, jax_batch, rng)
+            accuracy = compute_accuracy(logits, jax_batch["labels"])
 
             wandb.log({"loss": loss, "accuracy": accuracy})
             tqdm.write(
@@ -99,6 +101,8 @@ def train_model(dataset, batch_size=32, num_epochs=3, rng=rng):
 
 if __name__ == "__main__":
     train_dataset = load_data("data/IMDB Dataset.csv")
-    train_model(train_dataset)
 
-    wandb.finish()
+    try:
+        train_model(train_dataset)
+    finally:
+        wandb.finish()
